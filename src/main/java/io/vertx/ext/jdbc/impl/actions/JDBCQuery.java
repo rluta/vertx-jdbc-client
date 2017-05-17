@@ -67,7 +67,11 @@ public class JDBCQuery extends AbstractJDBCAction<io.vertx.ext.sql.ResultSet> {
               ref = ref.getNext();
             }
           }
-          retResult = statement.getMoreResults();
+          try {
+            retResult = statement.getMoreResults();
+          } catch (SQLFeatureNotSupportedException e) {
+            retResult = false;
+          }
         }
       }
 
