@@ -21,10 +21,7 @@ import io.vertx.core.WorkerExecutor;
 import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.impl.TaskQueue;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * @author <a href="mailto:nscavell@redhat.com">Nick Scavelli</a>
@@ -51,10 +48,14 @@ public class JDBCExecute extends AbstractJDBCAction<Void> {
       // If the execute statement happens to return a result set, we should close it in case
       // the connection pool doesn't.
       if (isResultSet) {
-        while (stmt.getMoreResults()) {
-          try (ResultSet rs = stmt.getResultSet()) {
-            // TODO: is this correct? just ignore?
-          };
+        try {
+          while (stmt.getMoreResults()) {
+            try (ResultSet rs = stmt.getResultSet()) {
+              // TODO: is this correct? just ignore?
+            };
+          }
+        } catch (SQLFeatureNotSupportedException e) {
+          // ignore if not supported
         }
       }
       return null;
